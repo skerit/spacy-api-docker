@@ -1,7 +1,7 @@
 FROM python:3.5
 MAINTAINER Johannes Gontrum <gontrum@me.com>
-#ENV LANG de
-ENV LANG en
+ENV LANG german
+#ENV LANG english
 
 # Install the needed packages
 RUN apt-get update
