@@ -1,0 +1,12 @@
+uwsgi:
+  socket: /app/spacyapi.sock
+  chmod-socket: 666
+  module: spacyapi.app
+  enable-threads: true
+  workers: 1
+  virtualenv: env/
+  logformat: {"service": "spacyapi", "ip": "%(addr)", "status": %(status), "method": "%(method)", "uri": "%(uri)", "duration": %(msecs)}
+  req-logger: socket:logstash:1740
+  log-req-encoder: format ${msg}
+  logger: socket:logstash:1741
+  log-req-encoder: json {"message": "${msg}"}

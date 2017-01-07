@@ -1,0 +1,155 @@
+swagger: '2.0'
+info:
+  title: spaCy API
+  version: "0.3"
+  description: A RESTful API for the spaCy NLP Framework.
+consumes:
+  - application/json
+produces:
+  - application/json
+basePath: /api
+paths:
+  /:
+    post:
+      operationId: spacyapi.api.post
+      summary: Send texts to be analyzed by spaCy.
+      parameters:
+        - name: request
+          in: body
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+                minLength: 1
+                description: A single text that spaCy should analyze.
+                example: Colorless green ideas sleep furiously.
+              texts:
+                type: array
+                description: An array of text for batch processing. If both 'text' and 'texts' are given, the 'text' field is ignored.
+                minItems: 1
+                items:
+                  type: string
+                  minLength: 1
+                  description: A text that spaCy should analyze.
+                  example: Colorless green ideas sleep furiously.
+              fields:
+                type: array
+                description: Configures which linguistic analyses should be returned. If this field is empty/not provided, the API returnes the full analysis.
+                items:
+                  type: string
+                  minLength: 1
+                  description: The name of an analysis.
+                  example: pos
+              key:
+                type: string
+                minLength: 10
+                description: A key that allows you to access the API. Configure this in the options.yml.
+                example: 3BC787B863576EB2B5944C7EAD948
+      responses:
+        403:
+          description: In case you want to limit the access via API keys, this is the corresponding error message.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                description: Description of the error.
+                example: API key missing.
+        200:
+          description: The linguistic analysis of the given text(s).
+          schema:
+            type: object
+            properties:
+              performance:
+                type: number
+                description: Duration of the analysis in ms.
+                example: 0.0042879581451416016.
+              version:
+                type: string
+                description: The version of the used spaCy package.
+                example: "1.5.0"
+              numberOfTexts:
+                type: number
+                description: The nummber of analyzed texts, if the input was provided via the 'texts' field.
+                example: 2
+              lang:
+                type: string
+                description: The language of the used spaCy model.
+                example: en
+              analysis:
+                type: array
+                description: An array of the analyses per text. If only one text was given via the 'text' input field, its analysis is the first object of this array.
+                items:
+                  type: object
+                  properties:
+                    numOfSentences:
+                      type: number
+                      description: The number of sentences in this text.
+                      example: 4
+                    numOfTokens:
+                      type: number
+                      description: The overall number of tokens in this text.
+                      example: 18
+                    sentences:
+                      type: array
+                      description: A list of sentences.
+                      items:
+                        type: array
+                        description: A list of tokens that belong to this sentence.
+                        items:
+                          type: object
+                          description: An object that describes all linguistic properties of this token.
+                          properties:
+                            token:
+                              type: string
+                              description: This token as it appears in the text.
+                              example: Person
+                            lemma:
+                              type: string
+                              description: The lemma of this token. Please note that lemmatisation is not availible in german.
+                              example: Person
+                            pos:
+                              type: string
+                              description: The part of speech tag of this token.
+                              example: NOUN
+                            tag:
+                              type: string
+                              description: The tag of this token. This is more detailed than the POS.
+                              example: NN
+                            ner:
+                              type: string
+                              description: The named entity tag of this token.
+                              example: ""
+                            oov:
+                              type: boolean
+                              description: Is this token out of vocabulary?
+                              example: false
+                            stop:
+                              type: boolean
+                              description: Is this token a stop word?
+                              example: false
+                            url:
+                              type: boolean
+                              description: Is this token a url?
+                              example: false
+                            num:
+                              type: boolean
+                              description: Is this token a number?
+                              example: false
+                            email:
+                              type: boolean
+                              description: Is this token an email address?
+                              example: false
+                            offsets:
+                              type: object
+                              description: The character offsets of this token within the text.
+                              properties:
+                                begin:
+                                  type: number
+                                  description: The begin of this token.
+                                  example: 13
+                                end:
+                                  type: number
+                                  description: The end position of this token.
+                                  example: 13

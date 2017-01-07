@@ -1,20 +1,24 @@
-FROM debian:sid
-MAINTAINER Johannes Gontrum <https://github.com/jgontrum>
-ENV LANG de
-ENV PORT 5000
+FROM python:3.5
+MAINTAINER Johannes Gontrum <gontrum@me.com>
+#ENV LANG de
+ENV LANG en
 
-RUN mkdir -p /usr/spacyapi
-COPY . /usr/spacyapi/
-
+# Install the needed packages
 RUN apt-get update
-RUN apt-get install -y python3 build-essential gcc g++ python3-dev python3-setuptools python3-pip
-RUN export PIP_CERT=`python3 -m pip._vendor.requests.certs`
+RUN apt-get install -y supervisor nginx
 
-RUN pip3 install --upgrade pip setuptools
-RUN pip3 install -r /usr/spacyapi/requirements.txt
+# Copy and set up the app
+RUN mkdir /app
+RUN pip install virtualenv
+COPY . /app
+RUN cd /app && make ${LANG}
 
-RUN python3 -m spacy.${LANG}.download parser
+# Configure nginx
+RUN mv /app/config/nginx.conf /etc/nginx/sites-available/default
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf 
 
-ENTRYPOINT cd /usr/spacyapi && python3 server.py
+# Configure supervisor
+RUN mv /app/config/supervisor.conf /etc/supervisor/conf.d/
 
-EXPOSE ${PORT}
+EXPOSE 20040
+CMD ["supervisord", "-n"]
