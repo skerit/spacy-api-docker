@@ -3,8 +3,10 @@
 all: english
 
 english: env/lib/python3.5/site-packages/spacy/data/en-1.1.0
+	@echo "language: en" >> config/options.yml
 
 german: env/lib/python3.5/site-packages/spacy/data/de-1.0.0
+	@echo "language: de" >> config/options.yml
 
 env/lib/python3.5/site-packages/spacy/data/en-1.1.0: env/bin/python
 	env/bin/python -m spacy.en.download parser
